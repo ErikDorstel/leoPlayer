@@ -27,7 +27,8 @@ function initChart() {
     data2.push(arraydata[index].split(",")[2]*1);
     data3.push(arraydata[index].split(",")[3]*1);
     data4.push(arraydata[index].split(",")[4]*1);
-    data5.push(arraydata[index].split(",")[5]*1); }
+    data5.push(arraydata[index].split(",")[5]*1);
+    if (data3[index]<=10 && index>0) { data1[index]=data1[index-1]; data2[index]=data2[index-1]; } }
 
   data=""; config="";
   getChart();
