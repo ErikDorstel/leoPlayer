@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<title>leoPlayer UI</title>
+<meta name="author" content="Erik Dorstel">
+<meta name="generator" content="vi">
+<meta name="repository" content="https://github.com/ErikDorstel/leoPlayer">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<style type="text/css">
+body      { font-family:Arial,sans-serif; font-size:1em; font-weight:500; color:#000000; background-color:#b0b0b0;
+            padding:0em; margin:0em; border:0em; }
+div       { text-decoration:none; user-select:none; display:inline-block; width:100%; text-align:center; }
+.title    { padding:0.5em; margin:0.2em; background-color:#c2d5ed; width:calc(100% - 2em); }
+.index    { padding:0.5em; margin:0.2em; background-color:#f0f0f0; width:calc(100% - 2em); text-align:left; cursor:pointer; }
+#index    { max-height:20em; overflow-y:auto; }
+.command  { padding:0.5em; margin:0.2em; background-color:#f0f0f0; width:calc(40% - 2em); border-radius:1em; cursor:pointer; }
+.status   { padding:0.5em; margin:0.2em; background-color:#a0a0a0; width:calc(100% - 2em); text-align:left; color:#ffffff; }
+</style>
+<script>
+
+function initPlayer() {
+  red="#E09090"; green="#90E090"; yellow="#FFE460"; gray="#f0f0f0"; blue="#c2d5ed";
+  setInterval(getStatus,5000); getStatus(); getIndex(); }
+
+function getIndex() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("index="); indexArray=ajaxObj.responseText.trim().split("\n");
+  //for (x=0;x<20;x++) { indexArray.push("Test Value"); }
+
+  for (i=0;i<indexArray.length;i++) {
+    node=append("index","div");
+    node.innerHTML=indexArray[i].replaceAll(".mp3","").replaceAll("_"," ");
+    node.className="index";
+    node.fileIndex=i+1;
+    node.onclick=onIndexClick; } }
+
+function getStatus() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("status="); status=ajaxObj.responseText.trim();
+
+  battery=Math.min(status.split(",")[1]*1,status.split(",")[2]*1);
+  battery=mapValue(battery,3.5,4.2,0,100);
+  if (battery<0) { battery=0; }
+  if (battery>100) { battery=100; }
+
+  runTime=status.split(",")[3]*1;
+  if (typeof oldRunTime==='undefined') { oldRunTime=runTime; notRunning=10; starting=1; newStatus=10; }
+  else if (runTime!=oldRunTime) { oldRunTime=runTime; notRunning=0; starting=0; newStatus++; } else { notRunning++; }
+
+  if (newStatus>2) { volume=status.split(",")[4]*1; }
+
+  playerStatus=status.split(",")[5]*1;
+  if (newStatus>2) { active=playerStatus&1; }
+  suppress=(playerStatus&2)>>1;
+  charging=(playerStatus&4)>>2;
+  off=(playerStatus&8)>>3;
+  undervoltage=(playerStatus&16)>>4;
+
+  if (newStatus>2) { file=decodeURI(status.split(",")[6]).replaceAll(".mp3","").replaceAll("_"," "); }
+
+  displayStatus(); }
+
+function displayStatus() {
+  if (active) { id("status").innerHTML="Play: "+file;
+    id("status").style.color="#000000"; id("status").style.backgroundColor=green; }
+
+  if (!active) { id("status").innerHTML="Player: Stop"; resetIndex();
+    id("status").style.color="#000000"; id("status").style.backgroundColor=yellow; }
+
+  if (off || notRunning>3) { id("status").innerHTML="Player: Off";
+    if ((!off) && starting==1) { id("status").innerHTML="Player: Connecting ..."; }
+    id("status").style.color="#ffffff"; id("status").style.backgroundColor=red;
+    if (battery<=30) { id("status").innerHTML+=" - low Battery"; }
+    id("index").style.display="none"; id("section1").style.display="none";
+    id("section2").style.display="none"; id("section3").style.display="none"; }
+  else { id("index").style.display="inline-block"; id("section1").style.display="inline-block";
+    id("section2").style.display="inline-block"; id("section3").style.display="inline-block"; }
+
+  if (undervoltage) { id("status").innerHTML="Player Off - Undervoltage"; }
+
+  id("volume").innerHTML="Volume: "+volume+"%";
+
+  id("battery").innerHTML="Battery: "+Math.trunc(battery)+"%";
+  if (charging) { id("battery").innerHTML+=" - Charging"; id("battery").style.backgroundColor=blue; id("battery").style.color="#000000"; }
+  else if (battery<=10) { id("battery").style.backgroundColor=red; id("battery").style.color="#ffffff"; }
+  else if (battery<=30) { id("battery").style.backgroundColor=yellow; id("battery").style.color="#000000"; }
+  else { id("battery").style.backgroundColor="#a0a0a0"; id("battery").style.color="#ffffff"; } }
+
+function sendCommand(commandText) {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("command="+commandText); }
+
+function resetIndex() {
+  for (node of document.getElementById("index").children) { node.style.backgroundColor=gray; } }
+
+function onIndexClick(event) {
+  if (volume==0) { volume=30; }
+  sendCommand("play,"+event.srcElement.fileIndex+","+volume);
+  resetIndex(); event.srcElement.style.backgroundColor=blue;
+  file=event.srcElement.innerHTML; active=1; displayStatus(); newStatus=0; }
+
+function setBreak(value) {
+  if (value) { sendCommand("stop,"+volume); setHighlight1(); active=0; }
+  else { if (volume==0) { volume=10; } sendCommand("go,"+volume); setHighlight2(); active=1; }
+  displayStatus(); newStatus=0; }
+
+function setVolume(value) {
+  if (value && volume<=90) { volume+=10; sendCommand("volume,"+volume); setHighlight3(); }
+  if ((!value) && volume>=10) { volume-=10; sendCommand("volume,"+volume); setHighlight4(); }
+  if (volume==0) { active=0; }
+  displayStatus(); newStatus=0; }
+
+function setHighlight1() {
+  id("highlight1").style.backgroundColor=blue; if (typeof highlightTimer1!=='undefined') { clearTimeout(highlightTimer1); }
+  highlightTimer1=setTimeout(endHighlight1,500); }
+function endHighlight1() { id("highlight1").style.backgroundColor=gray; }
+
+function setHighlight2() {
+  id("highlight2").style.backgroundColor=blue; if (typeof highlightTimer2!=='undefined') { clearTimeout(highlightTimer2); }
+  highlightTimer2=setTimeout(endHighlight2,500); }
+function endHighlight2() { id("highlight2").style.backgroundColor=gray; }
+
+function setHighlight3() {
+  id("highlight3").style.backgroundColor=blue; if (typeof highlightTimer3!=='undefined') { clearTimeout(highlightTimer3); }
+  highlightTimer3=setTimeout(endHighlight3,500); }
+function endHighlight3() { id("highlight3").style.backgroundColor=gray; }
+
+function setHighlight4() {
+  id("highlight4").style.backgroundColor=blue; if (typeof highlightTimer4!=='undefined') { clearTimeout(highlightTimer4); }
+  highlightTimer4=setTimeout(endHighlight4,500); }
+function endHighlight4() { id("highlight4").style.backgroundColor=gray; }
+
+function mapValue(value,inMin,inMax,outMin,outMax) { return (value-inMin)*(outMax-outMin)/(inMax-inMin)+outMin; }
+function id(id) { return document.getElementById(id); }
+function append(id,element) { return document.getElementById(id).appendChild(document.createElement(element)); }
+
+</script></head>
+<body onload="initPlayer();">
+<div><div class="title">leoPlayer</div></div>
+<div id="index"></div>
+<div id="section1">
+  <div class="command" id="highlight1" onclick='setBreak(1);'>Stop</div>
+  <div class="command" id="highlight2" onclick='setBreak(0);'>Go</div>
+</div>
+<div>
+  <div id="status" class="status"></div>
+</div>
+<div id="section2">
+  <div class="command" id="highlight3" onclick='setVolume(1);'>&plus;</div>
+  <div class="command" id="highlight4" onclick='setVolume(0);'>&minus;</div>
+</div>
+<div id="section3">
+  <div id="volume" class="status"></div>
+  <div id="battery" class="status"></div>
+</div>
+</body></html>

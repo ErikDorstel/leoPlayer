@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<title>leoPlayer Command</title>
+<meta name="author" content="Erik Dorstel">
+<meta name="generator" content="vi">
+<meta name="repository" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<style type="text/css">
+.button { font-family:Arial,sans-serif; font-size:1em; padding:0.2em; margin:0.2em;
+          color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+</style>
+<script>
+function initStatus() {
+  setInterval(function () { getStatus(); },5000);
+  getIndex(); getStatus(); id("command").focus(); }
+
+function getIndex() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("index="); index=ajaxObj.responseText.trim().replaceAll("\n","<br>").replaceAll(".mp3","").replaceAll("_"," ");
+
+  id("index").innerHTML=index; }
+
+function getStatus() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("status="); status=ajaxObj.responseText.trim();
+
+  id("status").innerHTML="";
+  id("status").innerHTML+="Date: "+(new Date(status.split(",")[0]*1000).toLocaleString());
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="Battery A: "+status.split(",")[1]*1;
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="Battery B: "+status.split(",")[2]*1;
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="Time: "+status.split(",")[3]*1;
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="Volume: "+status.split(",")[4]*1;
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="Status: "+status.split(",")[5]*1;
+  id("status").innerHTML+="<br>";
+  id("status").innerHTML+="File: "+decodeURI(status.split(",")[6]);
+  id("status").innerHTML+="<br>";
+
+  id("bottom").scrollIntoView(); }
+
+function sendCommand() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("POST","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send("command="+id("command").value); id("command").value=""; id("command").focus(); }
+
+function id(id) { return document.getElementById(id); }
+
+</script></head>
+<body onload="initStatus();">
+<div id="index"></div><br>
+<div id="status"></div><br>
+<div>
+  <input type="text" id="command">
+  <a href="javascript:sendCommand();">Send</a>
+</div>
+<div id="bottom"></div>
+</body></html>

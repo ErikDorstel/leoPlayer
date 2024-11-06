@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<title>leoPlayer Log</title>
+<meta name="author" content="Erik Dorstel">
+<meta name="generator" content="vi">
+<meta name="repository" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<style type="text/css">
+.button { font-family:Arial,sans-serif; font-size:1em; padding:0.2em; margin:0.2em;
+          color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+</style>
+<script>
+function initLog() { getLog(); }
+
+function getLog() {
+  ajaxObj=new XMLHttpRequest; ajaxObj.open("GET","backend.php",false);
+  ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  ajaxObj.setRequestHeader("Cache-Control","max-age=0");
+  ajaxObj.send(); arraydata=ajaxObj.responseText.trim().split("\n");
+
+  id("display").innerHTML="";
+  for (index=0;index<arraydata.length;index++) {
+    id("display").innerHTML+=(new Date(arraydata[index].split(",")[0]*1000).toLocaleString());
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=arraydata[index].split(",")[1]*1;
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=arraydata[index].split(",")[2]*1;
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=arraydata[index].split(",")[3]*1;
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=arraydata[index].split(",")[4]*1;
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=arraydata[index].split(",")[5]*1;
+    id("display").innerHTML+=" ";
+    id("display").innerHTML+=decodeURI(arraydata[index].split(",")[6]);
+    id("display").innerHTML+="<br>"; }
+
+  id("bottom").scrollIntoView(); }
+
+function id(id) { return document.getElementById(id); }
+
+</script></head>
+<body onload="initLog();">
+<div id="display"></div>
+<div id="bottom"></div>
+</body></html>
