@@ -1,7 +1,7 @@
 #define batteryMin 3.5f
 #define batteryMax 4.2f
 
-struct { float battery[2]={batteryMax,batteryMax}; uint8_t gauge=10; } batteryControl;
+struct { float battery[2]={10,10}; uint8_t gauge=10; } batteryControl;
 
 void initBattery() {
   pinMode(32,INPUT); // Analog Battery 1
