@@ -67,7 +67,7 @@ function getChart() {
     interaction:{mode:'nearest',intersect:false},
     resizeDelay:50,radius:0,scales:{
       x:{min:function(){if(labels.length>720){return labels.length-720;}else{return 0;}}},
-      y0:{position:"left",min:3.3,max:4.4,grid:{drawOnChartArea:true}},
+      y0:{position:"left",min:3.4,max:4.3,grid:{drawOnChartArea:true},ticks:{stepSize:0.1}},
       y1:{position:"right",grid:{drawOnChartArea:false}},
       y2:{position:"none",min:0,max:100,grid:{drawOnChartArea:false}},
       y3:{position:"none",grid:{drawOnChartArea:false}}},
