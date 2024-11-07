@@ -7,12 +7,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <style type="text/css">
-.button { font-family:Arial,sans-serif; font-size:1em; padding:0.2em; margin:0.2em;
-          color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+body  { font-family:Arial,sans-serif; font-size:1em; color:#000000; background-color:#ffffff; text-decoration:none; }
+a     { padding:0.5em; margin:0.2em; color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+input { padding:0.5em; margin:0.2em; color:#000000; background-color:#ffffff; width:30em; font-size:1em; }
 </style>
 <script>
 function initStatus() {
-  setInterval(function () { getStatus(); },5000);
+  setInterval(function () { getStatus(); },5000); id("command").value=""; id("command").onkeydown=keypress;
   getIndex(); getStatus(); id("command").focus(); }
 
 function getIndex() {
@@ -52,6 +53,8 @@ function sendCommand() {
   ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
   ajaxObj.setRequestHeader("Cache-Control","max-age=0");
   ajaxObj.send("command="+id("command").value); id("command").value=""; id("command").focus(); }
+
+function keypress(event) { if (event.which==13) { sendCommand(); } }
 
 function id(id) { return document.getElementById(id); }
 

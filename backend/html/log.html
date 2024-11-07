@@ -7,11 +7,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <style type="text/css">
-.button { font-family:Arial,sans-serif; font-size:1em; padding:0.2em; margin:0.2em;
-          color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+body { font-family:Arial,sans-serif; font-size:1em; color:#000000; background-color:#ffffff; text-decoration:none; }
 </style>
 <script>
-function initLog() { getLog(); }
+function initLog() {
+  id("check").checked=true; setInterval(function() { if (id("check").checked) { getLog(); } },5000); getLog(); }
 
 function getLog() {
   ajaxObj=new XMLHttpRequest; ajaxObj.open("GET","backend.php",false);
@@ -19,29 +19,24 @@ function getLog() {
   ajaxObj.setRequestHeader("Cache-Control","max-age=0");
   ajaxObj.send(); arraydata=ajaxObj.responseText.trim().split("\n");
 
-  id("display").innerHTML="";
-  for (index=0;index<arraydata.length;index++) {
-    id("display").innerHTML+=(new Date(arraydata[index].split(",")[0]*1000).toLocaleString());
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=arraydata[index].split(",")[1]*1;
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=arraydata[index].split(",")[2]*1;
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=arraydata[index].split(",")[3]*1;
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=arraydata[index].split(",")[4]*1;
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=arraydata[index].split(",")[5]*1;
-    id("display").innerHTML+=" ";
-    id("display").innerHTML+=decodeURI(arraydata[index].split(",")[6]);
-    id("display").innerHTML+="<br>"; }
+  for (index=0;index<arraydata.length;index++) { row=[];
+    row[0]=(new Date(arraydata[index].split(",")[0]*1000).toLocaleString());
+    row[1]=arraydata[index].split(",")[1];
+    row[2]=arraydata[index].split(",")[2];
+    row[3]=arraydata[index].split(",")[3];
+    row[4]=arraydata[index].split(",")[4];
+    row[5]=arraydata[index].split(",")[5];
+    row[6]=decodeURI(arraydata[index].split(",")[6]);
+    arraydata[index]=row.join("&nbsp;&nbsp;"); }
 
-  id("bottom").scrollIntoView(); }
+  id("display").innerHTML=arraydata.join("<br>");
+
+  id("check").scrollIntoView(); }
 
 function id(id) { return document.getElementById(id); }
 
 </script></head>
 <body onload="initLog();">
 <div id="display"></div>
-<div id="bottom"></div>
+<div><br>Auto Update<input type="checkbox" id="check"></div>
 </body></html>
