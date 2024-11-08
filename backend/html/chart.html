@@ -7,14 +7,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <style type="text/css">
-.button { font-family:Arial,sans-serif; font-size:1em; padding:0.2em; margin:0.2em;
-          color:#ffffff; background-color:#a0a0a0; cursor:pointer; text-decoration:none; }
+body    { font-family:Arial,sans-serif; font-size:1em; color:#000000; background-color:#ffffff; text-decoration:none; }
+.button { padding:0.5em; margin:0.2em; color:#ffffff; background-color:#a0a0a0; cursor:pointer; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <script>
+
 function initChart() {
+  setInterval(function() { if (id("check").checked) { update(); } },30000); displayChart(); }
+
+function displayChart() {
   ajaxObj=new XMLHttpRequest; ajaxObj.open("GET","backend.php",false);
   ajaxObj.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
   ajaxObj.setRequestHeader("Cache-Control","max-age=0");
@@ -33,12 +37,12 @@ function initChart() {
 
   data=""; config="";
   getChart();
-  myChart=new Chart(document.getElementById('myChart'),config);
+  leoPlayerChart=new Chart(document.getElementById('leoPlayerChart'),config);
   window.onresize=resizeScreen; resizeScreen(); }
 
-function reload() {
-  myChart.destroy();
-  initChart(); }
+function update() {
+  leoPlayerChart.destroy();
+  displayChart(); }
 
 function getChart() {
   data={labels:labels,datasets:[{
@@ -78,13 +82,17 @@ function getChart() {
         pinch:{enabled:true}}}}}}; }
 
 function resizeScreen() {
-  if (window.innerWidth<1000) { chart1.style.width="1000px"; }
-  else { chart1.style.width="100%"; } }
+  if (window.innerWidth<1000) { display.style.width="1000px"; }
+  else { display.style.width="100%"; } }
+
+function id(id) { return document.getElementById(id); }
 
 </script></head>
-<body id="display" onload="initChart();">
-<div id="chart1">
-  <canvas id="myChart"></canvas>
-  <a class="button" onclick="reload();">Reload</a>
+<body onload="initChart();">
+<div id="display">
+  <canvas id="leoPlayerChart"></canvas>
+  <br>
+  <a class="button" onclick="update();">Update</a>
+  Auto Update<input type="checkbox" id="check">
 </div>
 </body></html>
