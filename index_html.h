@@ -18,7 +18,8 @@ input   { padding:0.5em; margin:0em; border:0em; width:calc(100% - 2em); font-si
 
 function initCredentials() {
   red="#E09090"; green="#90E090"; yellow="#FFE460"; gray="#f0f0f0"; blue="#c2d5ed";
-  id("section3").style.display="none"; urlRedirect=""; }
+  id("section3").style.display="none"; urlRedirect="";
+  id("ssid").value=""; id("secret").value=""; id("ssid").focus(); }
 
 function sendCredentials() {
   requestAJAX("credentials," + a2h(id("ssid").value) + "," + a2h(id("secret").value)); }

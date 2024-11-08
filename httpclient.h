@@ -72,5 +72,5 @@ void postStatus(bool sync=0, bool off=0, bool undervoltage=0) {
     request.setReqHeader("Content-Type","application/x-www-form-urlencoded");
     if (requestOpenResult) { httpControl.app=2;
       uint8_t status=mp3Control.active|(mp3Control.suppress<<1)|(getUsbcStatus()<<2)|(off<<3)|(undervoltage<<4);
-      request.send("update="+String(batteryControl.battery[0],2)+","+String(batteryControl.battery[1],2)+","+String(millis()/1000)+","+String(mp3Control.volume)+","+String(status)+","+urlencode(mp3Control.file));
+      request.send("update="+String(batteryControl.battery[0],3)+","+String(batteryControl.battery[1],3)+","+String(millis()/1000)+","+String(mp3Control.volume)+","+String(status)+","+urlencode(mp3Control.file));
       if (sync) { while (httpControl.app) { asyncHttpCheck(); } } } } }

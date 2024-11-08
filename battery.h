@@ -19,19 +19,18 @@ void getGauge() {
 
 void checkBattery() {
   static uint64_t batteryTimer=0;
-  static uint32_t rawBattery1=0;
-  static uint32_t rawBattery2=0;
+  static uint32_t rawBattery[2]={0,0};
   static uint8_t count=0;
-  rawBattery1+=adc1_get_raw(ADC1_CHANNEL_4);
-  rawBattery2+=adc1_get_raw(ADC1_CHANNEL_5);
-  if (count>=120) {
-    rawBattery1/=count;
-    rawBattery2/=count;
-    batteryControl.battery[0]=rawBattery1/580.0f;
-    batteryControl.battery[1]=rawBattery2/580.0f;
+  rawBattery[0]+=adc1_get_raw(ADC1_CHANNEL_4);
+  rawBattery[1]+=adc1_get_raw(ADC1_CHANNEL_5);
+  if (count>=150) {
+    rawBattery[0]/=count;
+    rawBattery[1]/=count;
+    batteryControl.battery[0]=rawBattery[0]/580.0f;
+    batteryControl.battery[1]=rawBattery[1]/580.0f;
     count=0;
-    rawBattery1=0;
-    rawBattery2=0;
+    rawBattery[0]=0;
+    rawBattery[1]=0;
     getGauge(); } else { count++; } }
 
 bool getUsbcStatus() { return digitalRead(27); }
