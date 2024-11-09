@@ -52,7 +52,7 @@ void manageCredentials() {
         else if (c!='\r') { currentLine+=c; } } }
     header = ""; httpServerClient.stop(); }
 
-  if (ready) { ledsOff(); ESP.restart(); }
+  if (ready) { ledsOff(); delay(500); ESP.restart(); }
 
   checkBattery();
   if ((batteryControl.gauge==0 && (!getUsbcStatus())) || millis()>=120000UL) { ledsAlarm(); ledsOff(); switchOff(); } }
