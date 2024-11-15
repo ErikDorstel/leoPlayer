@@ -46,6 +46,7 @@ void checkStatus(bool force=0) {
         Serial.println("Active: " + String(mp3Control.active));
         aniControl.animation=ledsBreak; }
       checkCount++; }
+    else if (mp3Control.active && mp3Control.suppress) { checkCount++; }
     else { checkCount=0; }
     if (checkCount>=15 && (!getUsbcStatus())) { postStatus(1,1,0); ledsOff(); switchOff(); }
     logCount++; if (logCount>=5) { logCount=0; postStatus(); }
@@ -60,6 +61,7 @@ void buttonWorker() {
     mp3Control.active=true; aniControl.animation=ledsWait; player.setVolume(0.0f); player.next(); mp3Control.suppress=true;
     Serial.println("Active: " + String(mp3Control.active)); }
   else if (button==2) {
+    if (mp3Control.active && mp3Control.suppress) { return; }
     ledsOn();
     if (mp3Control.active) { mp3Control.active=false; aniControl.animation=ledsBreak; player.stop(); }
     else { mp3Control.active=true; aniControl.animation=ledsWait; player.setVolume(0.0f); player.previous(); mp3Control.suppress=true; }
