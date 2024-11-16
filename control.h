@@ -38,7 +38,7 @@ void checkStatus(bool force=0) {
   static uint8_t checkCount=0;
   static uint8_t logCount=0;
   static uint64_t lastCopierCounter=0;
-  if (force) { if (httpControl.app) { checkTimer=millis()+1000; } else { checkTimer=millis()+100; } logCount=100; return; }
+  if (force) { if (httpControl.app) { checkTimer=millis()+1000; } else { checkTimer=millis()+100; } logCount=100; lastCopierCounter=0; return; }
   if (millis()>=checkTimer) {
     checkTimer=millis()+2000;
     if (mp3Control.copierCounter==lastCopierCounter && (!mp3Control.suppress)) {
@@ -68,15 +68,15 @@ void buttonWorker() {
     Serial.println("Active: " + String(mp3Control.active)); }
   else if (button==4 || button==132) {
     if (mp3Control.suppress) { return; }
-    if (!mp3Control.active) { ledsVolume(); mp3Control.active=true; aniControl.animation=ledsPlay; player.play();
-      if (mp3Control.volume==0) { mp3Control.volume=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); } }
-    else if (mp3Control.volume<100) { mp3Control.volume+=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); }
+    if (!mp3Control.active) { ledsBattery(); return; }
+    if (mp3Control.volume>0) { mp3Control.volume-=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); }
+    if (mp3Control.volume==0) { ledsVolume(); mp3Control.active=false; aniControl.animation=ledsBreak; player.stop(); }
     Serial.println("Active: " + String(mp3Control.active));
     Serial.println("Volume: " + String(mp3Control.volume)); }
   else if (button==8 || button==136) {
     if (mp3Control.suppress) { return; }
-    if (!mp3Control.active) { ledsBattery(); return; }
-    if (mp3Control.volume>0) { mp3Control.volume-=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); }
-    if (mp3Control.volume==0) { ledsVolume(); mp3Control.active=false; aniControl.animation=ledsBreak; player.stop(); }
+    if (!mp3Control.active) { ledsVolume(); mp3Control.active=true; aniControl.animation=ledsPlay; player.play();
+      if (mp3Control.volume==0) { mp3Control.volume=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); } }
+    else if (mp3Control.volume<100) { mp3Control.volume+=10; ledsVolume(); player.setVolume(mp3Control.volume/100.0f); }
     Serial.println("Active: " + String(mp3Control.active));
     Serial.println("Volume: " + String(mp3Control.volume)); } }

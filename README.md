@@ -8,8 +8,8 @@ ESP32 based children's music box
 #### GPIO Buttons
 * GPIO 34 - red Button (On, Stop, Previous Track, double Click Off)
 * GPIO 35 - yellow Button (Next Track)
-* GPIO 36 - green Button (Volume +, Start)
-* GPIO 39 - blue Button (Volume -, Check Battery)
+* GPIO 36 - green Button (Volume -, Check Battery)
+* GPIO 39 - blue Button (Volume +, Start)
 #### GPIO Sensors
 * GPIO 27 - USB-C charging detect
 * GPIO 32 - Voltage Battery A
