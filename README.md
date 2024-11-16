@@ -6,8 +6,8 @@ ESP32 based children's music box
 * cloud based Web UI
 * local Web Server for WLAN configuration
 #### GPIO Buttons
-* GPIO 34 - red Button (On, Next Track, double Click Off)
-* GPIO 35 - yellow Button (Stop, Previous Track)
+* GPIO 34 - red Button (On, Stop, Previous Track, double Click Off)
+* GPIO 35 - yellow Button (Next Track)
 * GPIO 36 - green Button (Volume +, Start)
 * GPIO 39 - blue Button (Volume -, Check Battery)
 #### GPIO Sensors

@@ -57,14 +57,14 @@ void buttonWorker() {
   uint8_t button=getButton();
   if (!button) { return; }
   if (button==1) {
-    ledsOn();
-    mp3Control.active=true; aniControl.animation=ledsWait; player.setVolume(0.0f); player.next(); mp3Control.suppress=true;
-    Serial.println("Active: " + String(mp3Control.active)); }
-  else if (button==2) {
     if (mp3Control.active && mp3Control.suppress) { return; }
     ledsOn();
     if (mp3Control.active) { mp3Control.active=false; aniControl.animation=ledsBreak; player.stop(); }
     else { mp3Control.active=true; aniControl.animation=ledsWait; player.setVolume(0.0f); player.previous(); mp3Control.suppress=true; }
+    Serial.println("Active: " + String(mp3Control.active)); }
+  else if (button==2) {
+    ledsOn();
+    mp3Control.active=true; aniControl.animation=ledsWait; player.setVolume(0.0f); player.next(); mp3Control.suppress=true;
     Serial.println("Active: " + String(mp3Control.active)); }
   else if (button==4 || button==132) {
     if (mp3Control.suppress) { return; }
