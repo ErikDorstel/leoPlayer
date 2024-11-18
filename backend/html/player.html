@@ -42,11 +42,6 @@ function getStatus() {
   ajaxObj.setRequestHeader("Cache-Control","max-age=0");
   ajaxObj.send("status="); status=ajaxObj.responseText.trim();
 
-  battery=Math.min(status.split(",")[1]*1,status.split(",")[2]*1);
-  battery=mapValue(battery,3.5,4.2,0,100);
-  if (battery<0) { battery=0; }
-  if (battery>100) { battery=100; }
-
   runTime=status.split(",")[3]*1;
   if (typeof oldRunTime==='undefined') { oldRunTime=runTime; notRunning=10; starting=1; newStatus=10; }
   else if (runTime!=oldRunTime) { oldRunTime=runTime; notRunning=0; starting=0; newStatus++; } else { notRunning++; }
@@ -59,6 +54,12 @@ function getStatus() {
   charging=(playerStatus&4)>>2;
   off=(playerStatus&8)>>3;
   undervoltage=(playerStatus&16)>>4;
+
+  battery=((status.split(",")[1]*1)+(status.split(",")[2]*1))/2;
+  if (charging) { battery=mapValue(battery,3.5,4.3,0,100); }
+  else { battery=mapValue(battery,3.5,4.2,0,100); }
+  if (battery<0) { battery=0; }
+  if (battery>100) { battery=100; }
 
   if (newStatus>2) { file=decodeURI(status.split(",")[6]).replaceAll(".mp3","").replaceAll("_"," "); }
 
